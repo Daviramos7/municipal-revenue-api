@@ -47,6 +47,7 @@ municipal-revenue-api/
   study-log.md
   requirements.txt
   .gitignore
+```
 
 ## Status do projeto
 Em desenvolvimento.
