@@ -21,6 +21,7 @@ A proposta é construir uma aplicação capaz de:
 - FastAPI
 - Git
 - GitHub
+- uv
 
 ## Fluxo geral do projeto
 
@@ -33,28 +34,78 @@ O projeto seguirá o seguinte fluxo:
 5. Criação de endpoints para consulta dos dados.
 6. Documentação do projeto para apresentação no GitHub.
 
-## Estrutura inicial
+## Estrutura atual
 
 ```text
 municipal-revenue-api/
   app/
   data/
     raw/
+      revenues_2026.csv
     processed/
   scripts/
+    read_revenues.py
   docs/
   README.md
   study-log.md
-  requirements.txt
+  pyproject.toml
+  uv.lock
   .gitignore
 ```
 
+## Progresso atual
+
+- Estrutura inicial do projeto criada.
+- Base fictícia de receitas municipais adicionada em CSV.
+- Projeto Python inicializado com uv.
+- Pandas adicionado como dependência.
+- Script de leitura do CSV criado.
+- Exibição das primeiras linhas da base.
+- Contagem da quantidade de registros.
+- Listagem das colunas disponíveis.
+- Exibição dos tipos de dados.
+- Validação das colunas obrigatórias.
+- Tratamento dos principais erros de leitura do arquivo.
+
+## Colunas esperadas
+
+O arquivo CSV deve conter as seguintes colunas:
+
+- `ano`
+- `mes`
+- `codigo_receita`
+- `nome_receita`
+- `categoria`
+- `fonte`
+- `valor_previsto`
+- `valor_arrecadado`
+
+## Executando o projeto
+
+Instale e sincronize as dependências:
+
+```bash
+uv sync
+```
+
+Execute o script de leitura e validação:
+
+```bash
+uv run python scripts/read_revenues.py
+```
+
 ## Status do projeto
+
 Em desenvolvimento.
 
+A etapa inicial de leitura, inspeção e validação estrutural do arquivo CSV foi concluída.
+
 ## Próximos passos
-1. Implementar a leitura e tratamento dos dados fictícios.
-2. Criar o primeiro script de leitura dos dados.
-3. Criar o processo de tratamento dos dados.
-4. Criar o schema inicial do banco de dados PostgreSQL.
-5. Criar a API com FastAPI para consulta dos dados.
+
+1. Validar valores ausentes e registros duplicados.
+2. Verificar os tipos e intervalos dos dados.
+3. Criar o processo de limpeza e transformação.
+4. Salvar os dados tratados em `data/processed`.
+5. Criar o schema inicial do banco de dados PostgreSQL.
+6. Carregar os dados tratados no banco.
+7. Criar a API com FastAPI para consulta dos dados.
