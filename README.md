@@ -66,6 +66,13 @@ municipal-revenue-api/
 - Exibição dos tipos de dados.
 - Validação das colunas obrigatórias.
 - Tratamento dos principais erros de leitura do arquivo.
+- Validação de valores nulos.
+- Validação de linhas duplicadas.
+- Validação do intervalo da coluna `mes`.
+- Validação do ano esperado.
+- Validação de valores financeiros negativos.
+- Resumo final das inconsistências encontradas.
+- Testes realizados com dados inválidos inseridos propositalmente.
 
 ## Colunas esperadas
 
@@ -79,6 +86,19 @@ O arquivo CSV deve conter as seguintes colunas:
 - `fonte`
 - `valor_previsto`
 - `valor_arrecadado`
+
+## Validações atuais
+
+O script verifica:
+
+- presença das colunas obrigatórias;
+- valores nulos;
+- linhas duplicadas;
+- meses fora do intervalo de 1 a 12;
+- anos diferentes de 2026;
+- valores negativos nas colunas `valor_previsto` e `valor_arrecadado`.
+
+Quando alguma inconsistência é encontrada, o script exibe um resumo com os problemas identificados.
 
 ## Executando o projeto
 
@@ -94,18 +114,19 @@ Execute o script de leitura e validação:
 uv run python scripts/read_revenues.py
 ```
 
+O comando deve ser executado na raiz do projeto.
+
 ## Status do projeto
 
 Em desenvolvimento.
 
-A etapa inicial de leitura, inspeção e validação estrutural do arquivo CSV foi concluída.
+As etapas de leitura, inspeção, validação estrutural e validação inicial da qualidade dos dados foram concluídas.
 
 ## Próximos passos
 
-1. Validar valores ausentes e registros duplicados.
-2. Verificar os tipos e intervalos dos dados.
-3. Criar o processo de limpeza e transformação.
-4. Salvar os dados tratados em `data/processed`.
-5. Criar o schema inicial do banco de dados PostgreSQL.
-6. Carregar os dados tratados no banco.
-7. Criar a API com FastAPI para consulta dos dados.
+1. Verificar e validar os tipos esperados de cada coluna.
+2. Criar o processo de limpeza e transformação dos dados.
+3. Salvar os dados tratados em `data/processed`.
+4. Criar o schema inicial do banco de dados PostgreSQL.
+5. Carregar os dados tratados no banco.
+6. Criar a API com FastAPI para consulta dos dados.

@@ -105,19 +105,83 @@ As consultas desenvolvidas incluem:
 
 A leitura, inspeção e validação estrutural inicial do arquivo CSV foram concluídas.
 
-O script agora consegue:
+O script passou a conseguir:
 
 - carregar a base;
 - apresentar informações básicas;
 - verificar as colunas obrigatórias;
 - encerrar com mensagens claras em caso de erro.
 
+---
+
+## 27/07/2026 — Validação da qualidade dos dados
+
+### O que foi feito
+
+- Adicionei a verificação de valores nulos por coluna.
+- Calculei o total de valores nulos da base.
+- Adicionei a contagem de linhas duplicadas.
+- Validei se os meses estão entre 1 e 12.
+- Validei se todos os registros pertencem ao ano de 2026.
+- Validei se existem valores negativos em `valor_previsto` ou `valor_arrecadado`.
+- Criei uma lista para registrar as inconsistências detectadas.
+- Adicionei um resumo final informando se a base está válida ou precisa ser revisada.
+
+### Validações implementadas
+
+- valores nulos;
+- linhas duplicadas;
+- meses fora do intervalo esperado;
+- anos diferentes de 2026;
+- valores financeiros negativos.
+
+### Conceitos praticados
+
+- `isna`
+- `sum`
+- `duplicated`
+- filtros com condições booleanas
+- operadores `|` e `<`
+- `all`
+- conversão com `int` e `bool`
+- listas em Python
+- `append`
+- `if`, `else` e `not`
+- repetição com `for`
+
+### Testes realizados
+
+Foi criada temporariamente uma versão do CSV com inconsistências propositais:
+
+- 1 valor nulo;
+- 1 linha duplicada;
+- 1 mês igual a 13;
+- 1 valor financeiro negativo;
+- 1 ano diferente de 2026.
+
+O script detectou corretamente todos os problemas e exibiu as mensagens esperadas no resumo final.
+
+Depois dos testes, o arquivo CSV original foi restaurado e a validação voltou a aprovar a base.
+
+### Dificuldades encontradas
+
+- Diferenciar a contagem de registros válidos da identificação de registros inválidos.
+- Verificar se todos os valores da coluna `ano` eram iguais a 2026.
+- Somar o total de nulos a partir do resultado por coluna.
+- Evitar repetir todas as condições no `if` final.
+- Entender que o script deve ser executado a partir da raiz do projeto por causa do caminho relativo do CSV.
+
+### Resultado
+
+A etapa de validação inicial da qualidade dos dados foi concluída.
+
+O script agora consegue:
+
+- identificar inconsistências;
+- informar a quantidade de problemas encontrados;
+- listar os tipos de erros detectados;
+- aprovar a base quando nenhuma inconsistência existe.
+
 ### Próximo passo
 
-Validar a qualidade dos dados, incluindo:
-
-- valores ausentes;
-- registros duplicados;
-- tipos incorretos;
-- meses fora do intervalo esperado;
-- valores financeiros negativos ou inválidos.
+Validar os tipos esperados de cada coluna e iniciar o processo de limpeza e transformação dos dados.
