@@ -71,7 +71,10 @@ municipal-revenue-api/
 - Validação do intervalo da coluna `mes`.
 - Validação do ano esperado.
 - Validação de valores financeiros negativos.
+- Conversão de `codigo_receita` para texto.
+- Validação de conversão numérica das colunas `ano`, `mes`, `valor_previsto` e `valor_arrecadado`.
 - Resumo final das inconsistências encontradas.
+- Encerramento do script com código de erro quando a base é inválida.
 - Testes realizados com dados inválidos inseridos propositalmente.
 
 ## Colunas esperadas
@@ -87,6 +90,19 @@ O arquivo CSV deve conter as seguintes colunas:
 - `valor_previsto`
 - `valor_arrecadado`
 
+## Tipos esperados
+
+- `ano`: número inteiro;
+- `mes`: número inteiro;
+- `codigo_receita`: texto;
+- `nome_receita`: texto;
+- `categoria`: texto;
+- `fonte`: texto;
+- `valor_previsto`: número decimal;
+- `valor_arrecadado`: número decimal.
+
+A coluna `codigo_receita` é tratada como texto porque representa um identificador e não um valor usado em cálculos.
+
 ## Validações atuais
 
 O script verifica:
@@ -96,9 +112,10 @@ O script verifica:
 - linhas duplicadas;
 - meses fora do intervalo de 1 a 12;
 - anos diferentes de 2026;
-- valores negativos nas colunas `valor_previsto` e `valor_arrecadado`.
+- valores negativos nas colunas `valor_previsto` e `valor_arrecadado`;
+- valores que não podem ser convertidos para número nas colunas `ano`, `mes`, `valor_previsto` e `valor_arrecadado`.
 
-Quando alguma inconsistência é encontrada, o script exibe um resumo com os problemas identificados.
+Quando alguma inconsistência é encontrada, o script exibe um resumo com os problemas identificados e encerra a execução com código de erro.
 
 ## Executando o projeto
 
@@ -120,12 +137,12 @@ O comando deve ser executado na raiz do projeto.
 
 Em desenvolvimento.
 
-As etapas de leitura, inspeção, validação estrutural e validação inicial da qualidade dos dados foram concluídas.
+As etapas de leitura, inspeção, validação estrutural, validação da qualidade e validação inicial dos tipos de dados foram concluídas.
 
 ## Próximos passos
 
-1. Verificar e validar os tipos esperados de cada coluna.
-2. Criar o processo de limpeza e transformação dos dados.
+1. Criar um script separado para limpeza e transformação dos dados.
+2. Padronizar os tipos finais das colunas.
 3. Salvar os dados tratados em `data/processed`.
 4. Criar o schema inicial do banco de dados PostgreSQL.
 5. Carregar os dados tratados no banco.

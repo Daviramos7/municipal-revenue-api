@@ -182,6 +182,73 @@ O script agora consegue:
 - listar os tipos de erros detectados;
 - aprovar a base quando nenhuma inconsistência existe.
 
+---
+
+## 29/07/2026 — Validação e padronização inicial dos tipos
+
+### O que foi feito
+
+- Inspecionei os tipos carregados pelo Pandas.
+- Identifiquei que `codigo_receita` estava sendo lido como número inteiro.
+- Converti `codigo_receita` para texto por se tratar de um identificador.
+- Criei versões numéricas temporárias das colunas:
+  - `ano`;
+  - `mes`;
+  - `valor_previsto`;
+  - `valor_arrecadado`.
+- Usei conversão segura para identificar valores que não podem ser interpretados como números.
+- Integrei os erros de conversão à lista `erros_detectados`.
+- Ajustei a ordem das validações para evitar comparações numéricas com textos inválidos.
+- Passei a usar as séries convertidas nas validações de intervalo, ano e valores negativos.
+- Mantive o resumo das inconsistências como última etapa do script.
+- Adicionei encerramento com código de erro quando a base possui inconsistências.
+
+### Tipos esperados
+
+- `ano`: inteiro;
+- `mes`: inteiro;
+- `codigo_receita`: texto;
+- `nome_receita`: texto;
+- `categoria`: texto;
+- `fonte`: texto;
+- `valor_previsto`: decimal;
+- `valor_arrecadado`: decimal.
+
+### Conceitos praticados
+
+- `astype`
+- `pd.to_numeric`
+- `errors="coerce"`
+- conversão de identificadores para texto
+- criação de séries numéricas temporárias
+- comparação entre nulos antes e depois da conversão
+- prevenção de erros de tipo
+- ordem de execução das validações
+- reutilização de variáveis convertidas
+- códigos de saída com `sys.exit`
+
+### Dificuldades encontradas
+
+- Entender que `codigo_receita` deve ser texto mesmo sendo formado apenas por números.
+- Diferenciar conversão temporária de alteração da coluna original.
+- Calcular quantos novos valores nulos surgiram por falha de conversão.
+- Evitar que comparações como `< 0` ou `> 12` fossem executadas sobre textos.
+- Posicionar o resumo final somente depois de todas as validações.
+- Evitar sobrescrever as séries numéricas com DataFrames ou valores booleanos.
+- Utilizar as versões convertidas nas validações posteriores.
+
+### Resultado
+
+A validação inicial dos tipos de dados foi concluída.
+
+O script agora consegue:
+
+- tratar `codigo_receita` como identificador textual;
+- detectar valores não numéricos nas colunas esperadas;
+- continuar a validação sem quebrar ao encontrar textos inválidos;
+- incluir falhas de conversão no resumo de inconsistências;
+- encerrar com código de erro quando a base não está válida.
+
 ### Próximo passo
 
-Validar os tipos esperados de cada coluna e iniciar o processo de limpeza e transformação dos dados.
+Criar um script separado para limpeza e transformação dos dados, padronizar os tipos finais e salvar a base tratada em `data/processed`.
