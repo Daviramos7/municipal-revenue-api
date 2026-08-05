@@ -252,3 +252,168 @@ O script agora consegue:
 ### Próximo passo
 
 Criar um script separado para limpeza e transformação dos dados, padronizar os tipos finais e salvar a base tratada em `data/processed`.
+
+---
+
+## 05/08/2026 — Limpeza, transformação e geração da base processada
+
+### Retomada do projeto
+
+O projeto foi retomado em um notebook com Linux, sem uma cópia local anterior do repositório.
+
+Antes de continuar o desenvolvimento, foi necessário:
+
+- confirmar a instalação do Git;
+- instalar e configurar o `uv`;
+- autenticar a conta do GitHub com o GitHub CLI;
+- clonar o repositório;
+- recriar o ambiente virtual;
+- instalar as dependências registradas no projeto;
+- executar novamente o script de validação.
+
+O script `scripts/read_revenues.py` foi executado com sucesso e confirmou que a base original possuía:
+
+- 50 registros;
+- todas as colunas obrigatórias;
+- nenhum valor nulo;
+- nenhuma linha duplicada;
+- nenhum mês fora do intervalo esperado;
+- nenhum valor financeiro negativo;
+- somente registros do ano de 2026.
+
+### O que foi feito
+
+- Criei o script `scripts/transform_revenues.py`.
+- Defini o caminho da base bruta.
+- Defini o caminho do arquivo processado.
+- Li o arquivo `data/raw/revenues_2026.csv`.
+- Criei uma cópia do DataFrame original antes de iniciar as transformações.
+- Converti as colunas `ano` e `mes` para `int64`.
+- Converti `codigo_receita` para o tipo `string`.
+- Converti as colunas `nome_receita`, `categoria` e `fonte` para `string`.
+- Removi espaços extras no início e no final dos valores textuais.
+- Converti `valor_previsto` e `valor_arrecadado` para valores numéricos.
+- Configurei a conversão numérica para gerar erro caso algum valor inválido fosse encontrado.
+- Removi linhas completamente duplicadas.
+- Criei automaticamente o diretório `data/processed`, caso ele não existisse.
+- Salvei a tabela tratada em `data/processed/revenues_2026_processed.csv`.
+- Li novamente o arquivo processado para validar o resultado.
+- Verifiquei a quantidade de registros do arquivo salvo.
+- Verifiquei as colunas presentes no arquivo salvo.
+- Verifiquei a quantidade total de valores nulos.
+
+### Tipos finais utilizados durante a transformação
+
+- `ano`: `int64`;
+- `mes`: `int64`;
+- `codigo_receita`: `string`;
+- `nome_receita`: `string`;
+- `categoria`: `string`;
+- `fonte`: `string`;
+- `valor_previsto`: `float64`;
+- `valor_arrecadado`: `float64`.
+
+### Conceitos praticados
+
+- `DataFrame.copy`
+- `astype`
+- tipo `string` do Pandas
+- `str.strip`
+- listas em Python
+- repetição com `for`
+- acesso dinâmico a colunas
+- `pd.to_numeric`
+- `errors="raise"`
+- `drop_duplicates`
+- `Path.parent`
+- `mkdir`
+- `parents=True`
+- `exist_ok=True`
+- `DataFrame.to_csv`
+- `index=False`
+- leitura de um arquivo processado para validação
+- separação entre dados brutos e dados processados
+
+### Diferença entre os scripts
+
+O script `scripts/read_revenues.py` é responsável pela inspeção e validação dos dados.
+
+Ele identifica problemas, mas não gera uma nova versão tratada da base.
+
+O script `scripts/transform_revenues.py` é responsável pela limpeza, transformação e geração do arquivo processado.
+
+A separação entre os scripts representa um fluxo semelhante ao de um pipeline ETL:
+
+```text
+dados brutos
+→ leitura e validação
+→ limpeza e transformação
+→ dados processados
+```
+
+### Dificuldades encontradas
+
+- O repositório ainda não existia no notebook Linux.
+- A autenticação do GitHub por senha não funcionou, porque operações Git por HTTPS exigem outro método de autenticação.
+- Foi necessário usar o GitHub CLI para autenticar e clonar o repositório.
+- O caminho inicial usado no novo script apontava para `revenues.csv`, mas o nome correto era `revenues_2026.csv`.
+- Foi necessário entender a diferença entre validar uma base e transformar uma base.
+- Foi necessário entender por que uma cópia do DataFrame deve ser criada antes das transformações.
+- O método de salvamento foi inicialmente escrito como `tocsv`, mas o nome correto é `to_csv`.
+- Um comando do terminal foi colocado junto ao código Python e precisou ser executado separadamente.
+- Foi necessário compreender o uso de `index=False` para impedir a criação de uma coluna adicional no CSV.
+- Foi necessário compreender que `codigo_receita` deve ser texto por representar um identificador.
+
+### Testes realizados
+
+O script foi executado com sucesso e apresentou os seguintes tipos:
+
+```text
+ano                   int64
+mes                   int64
+codigo_receita       string
+nome_receita         string
+categoria            string
+fonte                 string
+valor_previsto      float64
+valor_arrecadado    float64
+```
+
+O arquivo processado foi criado em:
+
+```text
+data/processed/revenues_2026_processed.csv
+```
+
+A validação do arquivo salvo apresentou:
+
+- 50 registros;
+- 8 colunas;
+- nenhum valor nulo;
+- estrutura compatível com a base original.
+
+### Resultado
+
+A etapa de limpeza e transformação dos dados foi concluída.
+
+O projeto agora possui uma separação clara entre:
+
+- base bruta;
+- validação;
+- transformação;
+- base processada.
+
+O script agora consegue:
+
+- preservar a base original;
+- padronizar os tipos das colunas;
+- limpar os campos textuais;
+- remover linhas duplicadas;
+- gerar o diretório de saída automaticamente;
+- salvar uma nova versão processada;
+- validar se o arquivo gerado pode ser lido corretamente;
+- confirmar que os registros e as colunas foram preservados.
+
+### Próximo passo
+
+Criar o schema inicial do banco de dados PostgreSQL e preparar o carregamento da base processada.
