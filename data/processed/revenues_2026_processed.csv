@@ -1,0 +1,51 @@
+ano,mes,codigo_receita,nome_receita,categoria,fonte,valor_previsto,valor_arrecadado
+2026,1,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,850000.0,792450.35
+2026,1,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1250000.0,1328450.9
+2026,1,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,420000.0,388900.2
+2026,1,112101110001,TLP - Taxa de Limpeza Publica,TLP,Recursos Proprios,310000.0,298450.0
+2026,1,112201110001,Taxa de Licenciamento e Fiscalizacao,Taxas,Recursos Proprios,185000.0,172300.45
+2026,2,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,870000.0,821330.1
+2026,2,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1275000.0,1299900.0
+2026,2,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,430000.0,401250.8
+2026,2,112101110001,TLP - Taxa de Limpeza Publica,TLP,Recursos Proprios,315000.0,306780.55
+2026,2,112201110001,Taxa de Licenciamento e Fiscalizacao,Taxas,Recursos Proprios,190000.0,184620.0
+2026,3,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,900000.0,875430.75
+2026,3,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1300000.0,1362100.25
+2026,3,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,445000.0,439880.4
+2026,3,112101110001,TLP - Taxa de Limpeza Publica,TLP,Recursos Proprios,320000.0,314200.0
+2026,3,171801210001,Cota Parte do ICMS,Transferencias,Transferencias Estaduais,2100000.0,2056700.9
+2026,4,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,880000.0,843210.3
+2026,4,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1320000.0,1344500.6
+2026,4,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,455000.0,462900.1
+2026,4,171801210001,Cota Parte do ICMS,Transferencias,Transferencias Estaduais,2150000.0,2112300.0
+2026,4,171802610001,Cota Parte do FPM,Transferencias,Transferencias Federais,1800000.0,1765400.85
+2026,5,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,860000.0,849950.0
+2026,5,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1340000.0,1387700.45
+2026,5,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,460000.0,448120.7
+2026,5,171801210001,Cota Parte do ICMS,Transferencias,Transferencias Estaduais,2180000.0,2193400.2
+2026,5,191101110001,Multas e Juros de Mora,Multas,Recursos Proprios,145000.0,153800.0
+2026,6,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,840000.0,812450.65
+2026,6,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1360000.0,1412300.95
+2026,6,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,470000.0,489900.0
+2026,6,171802610001,Cota Parte do FPM,Transferencias,Transferencias Federais,1850000.0,1817700.3
+2026,6,199099110001,Outras Receitas Correntes,Outras Receitas,Recursos Proprios,220000.0,198450.1
+2026,7,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,830000.0,801200.0
+2026,7,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1380000.0,1428800.75
+2026,7,112201110001,Taxa de Licenciamento e Fiscalizacao,Taxas,Recursos Proprios,205000.0,211300.4
+2026,7,171801210001,Cota Parte do ICMS,Transferencias,Transferencias Estaduais,2210000.0,2179900.55
+2026,7,193201110001,Receita da Divida Ativa Tributaria,Divida Ativa,Recursos Proprios,300000.0,267500.0
+2026,8,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,820000.0,798300.25
+2026,8,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1400000.0,1445600.9
+2026,8,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,480000.0,472100.0
+2026,8,171802610001,Cota Parte do FPM,Transferencias,Transferencias Federais,1880000.0,1902300.15
+2026,8,199099110001,Outras Receitas Correntes,Outras Receitas,Recursos Proprios,230000.0,244850.6
+2026,9,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,810000.0,786450.8
+2026,9,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1420000.0,1478900.0
+2026,9,112101110001,TLP - Taxa de Limpeza Publica,TLP,Recursos Proprios,325000.0,319700.35
+2026,9,171801210001,Cota Parte do ICMS,Transferencias,Transferencias Estaduais,2230000.0,2298100.45
+2026,9,191101110001,Multas e Juros de Mora,Multas,Recursos Proprios,150000.0,160450.0
+2026,10,111801110001,IPTU - Imposto Predial e Territorial Urbano,IPTU,Recursos Proprios,805000.0,799880.0
+2026,10,111802310001,ISS - Imposto Sobre Servicos,ISS,Recursos Proprios,1450000.0,1493400.2
+2026,10,111803410001,ITBI - Imposto Sobre Transmissao de Bens,ITBI,Recursos Proprios,490000.0,501250.9
+2026,10,171802610001,Cota Parte do FPM,Transferencias,Transferencias Federais,1900000.0,1876400.7
+2026,10,193201110001,Receita da Divida Ativa Tributaria,Divida Ativa,Recursos Proprios,310000.0,295300.0
