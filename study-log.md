@@ -417,3 +417,318 @@ O script agora consegue:
 ### Próximo passo
 
 Criar o schema inicial do banco de dados PostgreSQL e preparar o carregamento da base processada.
+
+---
+
+## 10/08/2026 — PostgreSQL, persistência e carga automatizada
+
+### Retomada no Windows
+
+O projeto foi retomado em um computador Windows.
+
+Antes de iniciar a nova etapa, foi necessário:
+
+- executar `git pull` para sincronizar o repositório com as alterações feitas anteriormente no Linux;
+- executar `uv sync`;
+- executar novamente `scripts/read_revenues.py`;
+- executar novamente `scripts/transform_revenues.py`;
+- confirmar que a base continuava válida;
+- confirmar que o arquivo processado continuava com 50 registros e nenhum valor nulo.
+
+### Configuração do PostgreSQL
+
+O PostgreSQL ainda não estava instalado no ambiente Windows.
+
+Foi necessário:
+
+- instalar o PostgreSQL 18;
+- confirmar a execução do serviço `postgresql-x64-18`;
+- localizar o executável `psql.exe`;
+- adicionar temporariamente o diretório do PostgreSQL ao `PATH` da sessão;
+- testar a conexão com o servidor pelo `psql`;
+- utilizar o usuário administrativo `postgres`.
+
+### Banco criado
+
+Foi criado o banco:
+
+```text
+municipal_revenue
+```
+
+Depois da criação, a conexão foi alterada para o novo banco utilizando o `psql`.
+
+### Schema inicial
+
+Foi criada a tabela `revenues` com as seguintes colunas:
+
+- `id`;
+- `ano`;
+- `mes`;
+- `codigo_receita`;
+- `nome_receita`;
+- `categoria`;
+- `fonte`;
+- `valor_previsto`;
+- `valor_arrecadado`.
+
+Os principais tipos utilizados foram:
+
+- `BIGSERIAL` para o identificador;
+- `INTEGER` para ano e mês;
+- `TEXT` para identificadores e campos descritivos;
+- `NUMERIC(14, 2)` para os valores financeiros.
+
+### Restrições implementadas
+
+Foram utilizadas as seguintes restrições:
+
+- `PRIMARY KEY` em `id`;
+- `NOT NULL` nos campos obrigatórios;
+- `CHECK (mes BETWEEN 1 AND 12)`;
+- `UNIQUE (ano, mes, codigo_receita)`.
+
+A restrição de unicidade passou a identificar cada registro pela combinação:
+
+```text
+ano + mes + codigo_receita
+```
+
+O schema foi versionado em:
+
+```text
+database/schema.sql
+```
+
+### Primeira carga manual
+
+Antes da automação em Python, a base processada foi carregada manualmente com `\copy`.
+
+Foram carregados:
+
+```text
+50 registros
+```
+
+Depois da carga foram executadas consultas para:
+
+- conferir a quantidade de registros;
+- visualizar os primeiros registros;
+- calcular o total arrecadado por mês.
+
+### Dependência PostgreSQL no Python
+
+Foi adicionado o Psycopg ao projeto.
+
+O objetivo foi permitir que o Python se conectasse diretamente ao PostgreSQL.
+
+### Script de carga
+
+Foi criado:
+
+```text
+scripts/load_revenues.py
+```
+
+O script realiza:
+
+- leitura do CSV processado com Pandas;
+- abertura de conexão com PostgreSQL;
+- criação de um cursor;
+- preparação dos registros;
+- execução da carga;
+- confirmação da transação;
+- tratamento de erros;
+- fechamento dos recursos utilizados.
+
+### Variáveis de ambiente
+
+As configurações de conexão não foram colocadas diretamente no código.
+
+Foram utilizadas as variáveis:
+
+- `PGHOST`;
+- `PGPORT`;
+- `PGDATABASE`;
+- `PGUSER`;
+- `PGPASSWORD`.
+
+Isso permitiu manter a senha do PostgreSQL fora do código versionado.
+
+### Conceitos praticados
+
+- PostgreSQL
+- `psql`
+- criação de banco de dados
+- `CREATE DATABASE`
+- `CREATE TABLE`
+- `PRIMARY KEY`
+- `BIGSERIAL`
+- `NOT NULL`
+- `CHECK`
+- `UNIQUE`
+- `NUMERIC`
+- `\copy`
+- Psycopg
+- conexão Python → PostgreSQL
+- variáveis de ambiente
+- `os.getenv`
+- conexão com `psycopg.connect`
+- cursor
+- `INSERT`
+- placeholders `%s`
+- `iterrows`
+- tuplas
+- `executemany`
+- transações
+- `commit`
+- `rollback`
+- `ON CONFLICT`
+- `DO UPDATE SET`
+- `EXCLUDED`
+- upsert
+
+### Preparação dos registros
+
+As linhas do DataFrame foram percorridas e convertidas em tuplas contendo:
+
+- ano;
+- mês;
+- código da receita;
+- nome da receita;
+- categoria;
+- fonte;
+- valor previsto;
+- valor arrecadado.
+
+Esses registros foram armazenados em uma lista e enviados ao PostgreSQL utilizando:
+
+```text
+executemany
+```
+
+### Transações
+
+A carga foi protegida com `try` e `except`.
+
+Quando a operação é concluída corretamente:
+
+```text
+commit
+```
+
+confirma as alterações.
+
+Caso algum erro seja encontrado:
+
+```text
+rollback
+```
+
+desfaz a transação.
+
+### Upsert
+
+A carga foi alterada para utilizar:
+
+```sql
+ON CONFLICT (ano, mes, codigo_receita)
+DO UPDATE SET
+```
+
+Com isso, o comportamento passou a ser:
+
+```text
+registro não existe
+→ INSERT
+
+registro já existe
+→ UPDATE
+```
+
+Os seguintes campos são atualizados quando o registro já existe:
+
+- `nome_receita`;
+- `categoria`;
+- `fonte`;
+- `valor_previsto`;
+- `valor_arrecadado`.
+
+### Testes realizados
+
+#### Carga pelo Python
+
+A tabela foi limpa temporariamente para testar a carga automatizada.
+
+O script inseriu:
+
+```text
+50 registros
+```
+
+A consulta:
+
+```sql
+SELECT COUNT(*) FROM revenues;
+```
+
+confirmou a presença de 50 registros.
+
+#### Teste contra duplicação
+
+O script foi executado novamente sem limpar a tabela.
+
+A quantidade permaneceu:
+
+```text
+50 registros
+```
+
+confirmando que a restrição única impediu duplicações.
+
+#### Teste de atualização
+
+Um valor de `valor_arrecadado` foi alterado manualmente no PostgreSQL para:
+
+```text
+1.00
+```
+
+Depois da execução de `scripts/load_revenues.py`, o valor retornou para:
+
+```text
+792450.35
+```
+
+Esse teste confirmou que o `DO UPDATE SET` estava atualizando registros existentes com os dados presentes no arquivo processado.
+
+### Resultado
+
+A etapa de persistência em PostgreSQL e carga automatizada foi concluída.
+
+O fluxo atual do projeto passou a ser:
+
+```text
+CSV bruto
+→ leitura e validação
+→ limpeza e transformação
+→ CSV processado
+→ carga automatizada
+→ PostgreSQL
+```
+
+O projeto agora consegue:
+
+- validar dados brutos;
+- transformar e padronizar os dados;
+- gerar uma base processada;
+- conectar Python ao PostgreSQL;
+- carregar os dados automaticamente;
+- impedir duplicação de registros;
+- atualizar registros existentes;
+- utilizar transações para preservar a consistência do banco;
+- manter credenciais fora do código-fonte.
+
+### Próximo passo
+
+Criar a API com FastAPI para consultar os dados armazenados no PostgreSQL.

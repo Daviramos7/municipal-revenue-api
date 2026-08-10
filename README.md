@@ -18,6 +18,7 @@ A proposta é construir uma aplicação capaz de:
 - Python
 - Pandas
 - PostgreSQL
+- Psycopg
 - FastAPI
 - Git
 - GitHub
@@ -44,9 +45,12 @@ municipal-revenue-api/
       revenues_2026.csv
     processed/
       revenues_2026_processed.csv
+  database/
+    schema.sql
   scripts/
     read_revenues.py
     transform_revenues.py
+    load_revenues.py
   docs/
   README.md
   study-log.md
@@ -88,6 +92,24 @@ municipal-revenue-api/
 - Validação da leitura do arquivo processado.
 - Confirmação da preservação dos 50 registros.
 - Confirmação da ausência de valores nulos no arquivo processado.
+- PostgreSQL instalado e configurado no ambiente Windows.
+- Banco de dados `municipal_revenue` criado.
+- Schema inicial do banco criado em `database/schema.sql`.
+- Tabela `revenues` criada com tipos compatíveis com os dados processados.
+- Chave primária automática criada com `BIGSERIAL`.
+- Restrição para limitar a coluna `mes` ao intervalo de 1 a 12.
+- Restrição de unicidade criada para `ano`, `mes` e `codigo_receita`.
+- Psycopg adicionado como dependência do projeto.
+- Script `scripts/load_revenues.py` criado.
+- Conexão Python com PostgreSQL realizada por meio do Psycopg.
+- Credenciais do banco lidas por variáveis de ambiente.
+- Conversão das linhas do DataFrame em registros para inserção.
+- Carga dos 50 registros processados no PostgreSQL.
+- Uso de transações com `commit` e `rollback`.
+- Implementação de upsert com `ON CONFLICT ... DO UPDATE SET`.
+- Validação de que novas execuções do loader não duplicam registros.
+- Validação de atualização de registros existentes a partir do CSV processado.
+- Confirmação de 50 registros persistidos no PostgreSQL.
 
 ## Colunas esperadas
 
@@ -161,6 +183,96 @@ O arquivo processado possui:
 - nenhum valor nulo;
 - tipos padronizados para as etapas seguintes do projeto.
 
+## Banco de dados
+
+O projeto utiliza um banco PostgreSQL chamado:
+
+```text
+municipal_revenue
+```
+
+A tabela principal é:
+
+```text
+revenues
+```
+
+Sua estrutura é definida em:
+
+```text
+database/schema.sql
+```
+
+A tabela contém:
+
+- `id`: chave primária automática;
+- `ano`: inteiro;
+- `mes`: inteiro entre 1 e 12;
+- `codigo_receita`: texto;
+- `nome_receita`: texto;
+- `categoria`: texto;
+- `fonte`: texto;
+- `valor_previsto`: `NUMERIC(14, 2)`;
+- `valor_arrecadado`: `NUMERIC(14, 2)`.
+
+A combinação abaixo é única:
+
+```text
+ano + mes + codigo_receita
+```
+
+Essa restrição permite utilizar upsert durante a carga dos dados.
+
+## Carga no PostgreSQL
+
+O script `scripts/load_revenues.py` realiza:
+
+- leitura do arquivo processado;
+- conexão com o PostgreSQL por meio do Psycopg;
+- leitura das credenciais por variáveis de ambiente;
+- preparação dos registros;
+- inserção em lote com `executemany`;
+- confirmação da transação com `commit`;
+- cancelamento da transação com `rollback` em caso de erro;
+- atualização de registros existentes com `ON CONFLICT ... DO UPDATE SET`;
+- prevenção de duplicação por meio da restrição única da tabela.
+
+A carga atual possui 50 registros.
+
+O comportamento do upsert é:
+
+```text
+registro não existe
+→ INSERT
+
+registro já existe
+→ UPDATE
+```
+
+## Variáveis de ambiente
+
+Antes de executar a carga, devem estar disponíveis as seguintes variáveis:
+
+```text
+PGHOST
+PGPORT
+PGDATABASE
+PGUSER
+PGPASSWORD
+```
+
+Exemplo no PowerShell:
+
+```powershell
+$env:PGHOST="localhost"
+$env:PGPORT="5432"
+$env:PGDATABASE="municipal_revenue"
+$env:PGUSER="postgres"
+$env:PGPASSWORD="sua_senha"
+```
+
+A senha do PostgreSQL não é armazenada diretamente no código-fonte.
+
 ## Executando o projeto
 
 Instale e sincronize as dependências:
@@ -181,7 +293,13 @@ Execute o script de limpeza e transformação:
 uv run python scripts/transform_revenues.py
 ```
 
-O comando deve ser executado na raiz do projeto.
+Execute o script de carga no PostgreSQL:
+
+```bash
+uv run python scripts/load_revenues.py
+```
+
+Os comandos devem ser executados na raiz do projeto.
 
 ## Status do projeto
 
@@ -190,6 +308,18 @@ Em desenvolvimento.
 As etapas de leitura, inspeção, validação estrutural, validação da qualidade e validação inicial dos tipos de dados foram concluídas.
 
 A etapa de limpeza, transformação e geração da base processada também foi concluída.
+
+A criação do schema PostgreSQL e a carga automatizada dos dados processados também foram concluídas.
+
+O fluxo atual do projeto é:
+
+```text
+CSV bruto
+→ validação
+→ transformação
+→ CSV processado
+→ PostgreSQL
+```
 
 ## Próximos passos
 
@@ -202,4 +332,6 @@ A etapa de limpeza, transformação e geração da base processada também foi c
 
 Os itens 1, 2 e 3 foram concluídos em 05/08/2026.
 
-A próxima etapa ativa é criar o schema inicial do banco de dados PostgreSQL.
+Os itens 4 e 5 foram concluídos em 10/08/2026.
+
+A próxima etapa ativa é criar a API com FastAPI para consulta dos dados.
