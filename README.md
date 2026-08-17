@@ -20,6 +20,8 @@ A proposta é construir uma aplicação capaz de:
 - PostgreSQL
 - Psycopg
 - FastAPI
+- Uvicorn
+- python-dotenv
 - Git
 - GitHub
 - uv
@@ -40,6 +42,7 @@ O projeto seguirá o seguinte fluxo:
 ```text
 municipal-revenue-api/
   app/
+    main.py
   data/
     raw/
       revenues_2026.csv
@@ -52,6 +55,7 @@ municipal-revenue-api/
     transform_revenues.py
     load_revenues.py
   docs/
+  .env.example
   README.md
   study-log.md
   pyproject.toml
@@ -110,6 +114,20 @@ municipal-revenue-api/
 - Validação de que novas execuções do loader não duplicam registros.
 - Validação de atualização de registros existentes a partir do CSV processado.
 - Confirmação de 50 registros persistidos no PostgreSQL.
+- FastAPI adicionada ao projeto.
+- Uvicorn configurado como servidor de desenvolvimento.
+- Aplicação criada em `app/main.py`.
+- Endpoint raiz `GET /` criado.
+- Endpoint `GET /revenues` criado.
+- Conexão da API com o PostgreSQL implementada.
+- Uso de `dict_row` para retornar os registros como objetos JSON.
+- Retorno dos 50 registros do PostgreSQL pela API validado.
+- Documentação automática Swagger disponível em `/docs`.
+- `python-dotenv` adicionado ao projeto.
+- Arquivo `.env` utilizado para configurações locais.
+- `.env` adicionado ao `.gitignore`.
+- `.env.example` criado sem credenciais sensíveis.
+- API validada com resposta HTTP `200`.
 
 ## Colunas esperadas
 
@@ -273,6 +291,65 @@ $env:PGPASSWORD="sua_senha"
 
 A senha do PostgreSQL não é armazenada diretamente no código-fonte.
 
+
+## API
+
+A aplicação FastAPI está localizada em:
+
+```text
+app/main.py
+```
+
+### Endpoint raiz
+
+```http
+GET /
+```
+
+Retorna uma mensagem simples para confirmar que a aplicação está disponível.
+
+Exemplo:
+
+```json
+{
+  "message": "Municipal Revenue API"
+}
+```
+
+### Listagem de receitas
+
+```http
+GET /revenues
+```
+
+Consulta a tabela `revenues` no PostgreSQL e retorna todos os registros em formato JSON.
+
+O Psycopg utiliza `dict_row` para que cada registro retornado pelo banco seja representado com o nome de suas colunas.
+
+A documentação automática da API pode ser acessada em:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Configuração do ambiente
+
+As configurações locais são armazenadas em um arquivo `.env`.
+
+O `.env` não é versionado.
+
+O arquivo `.env.example` documenta as variáveis necessárias:
+
+```env
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=municipal_revenue
+PGUSER=postgres
+PGPASSWORD=
+```
+
+O projeto utiliza `python-dotenv` para carregar essas configurações automaticamente.
+
 ## Executando o projeto
 
 Instale e sincronize as dependências:
@@ -299,6 +376,18 @@ Execute o script de carga no PostgreSQL:
 uv run python scripts/load_revenues.py
 ```
 
+Execute a API em modo de desenvolvimento:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+Depois acesse:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
 Os comandos devem ser executados na raiz do projeto.
 
 ## Status do projeto
@@ -311,6 +400,8 @@ A etapa de limpeza, transformação e geração da base processada também foi c
 
 A criação do schema PostgreSQL e a carga automatizada dos dados processados também foram concluídas.
 
+A estrutura inicial da API com FastAPI e o primeiro endpoint de consulta ao PostgreSQL também foram concluídos.
+
 O fluxo atual do projeto é:
 
 ```text
@@ -318,7 +409,10 @@ CSV bruto
 → validação
 → transformação
 → CSV processado
+→ carga automatizada
 → PostgreSQL
+→ FastAPI
+→ JSON
 ```
 
 ## Próximos passos
@@ -329,9 +423,15 @@ CSV bruto
 4. Criar o schema inicial do banco de dados PostgreSQL.
 5. Carregar os dados tratados no banco.
 6. Criar a API com FastAPI para consulta dos dados.
+7. Adicionar filtros ao endpoint de receitas.
+8. Implementar consultas e indicadores agregados.
+9. Criar modelos de resposta com Pydantic.
+10. Melhorar o tratamento de erros e gerenciamento das conexões com o banco.
 
 Os itens 1, 2 e 3 foram concluídos em 05/08/2026.
 
 Os itens 4 e 5 foram concluídos em 10/08/2026.
 
-A próxima etapa ativa é criar a API com FastAPI para consulta dos dados.
+A estrutura inicial do item 6 foi concluída em 17/08/2026.
+
+A próxima etapa ativa é adicionar filtros e parâmetros de consulta ao endpoint `GET /revenues`.

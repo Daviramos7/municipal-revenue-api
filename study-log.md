@@ -732,3 +732,288 @@ O projeto agora consegue:
 ### Próximo passo
 
 Criar a API com FastAPI para consultar os dados armazenados no PostgreSQL.
+
+---
+
+## 17/08/2026 — FastAPI e primeira consulta ao PostgreSQL pela API
+
+### O que foi feito
+
+Foi iniciada a camada de API do projeto utilizando FastAPI.
+
+Nesta etapa:
+
+- FastAPI foi adicionada como dependência do projeto;
+- Uvicorn foi adicionado como servidor para execução da aplicação;
+- foi criado o arquivo `app/main.py`;
+- foi criada a instância principal da aplicação FastAPI;
+- foi criado o endpoint `GET /`;
+- a aplicação foi executada com Uvicorn;
+- a documentação automática do FastAPI foi acessada pelo Swagger;
+- foi criado o endpoint `GET /revenues`;
+- a API foi conectada ao PostgreSQL utilizando Psycopg;
+- foi criada uma função específica para abrir conexões com o banco;
+- foi executada uma consulta `SELECT` pela API;
+- os resultados foram recuperados com `fetchall`;
+- foi utilizado `dict_row` para retornar registros estruturados;
+- os 50 registros do PostgreSQL foram retornados em JSON;
+- o endpoint foi validado com resposta HTTP `200`.
+
+### Estrutura inicial da aplicação
+
+Foi criado:
+
+```text
+app/
+  main.py
+```
+
+O arquivo passou a concentrar inicialmente:
+
+- criação da aplicação FastAPI;
+- função de conexão com PostgreSQL;
+- endpoint raiz;
+- endpoint de listagem de receitas.
+
+### Endpoint raiz
+
+Foi criado:
+
+```http
+GET /
+```
+
+O endpoint retorna:
+
+```json
+{
+  "message": "Municipal Revenue API"
+}
+```
+
+Essa rota foi utilizada inicialmente para confirmar que o servidor estava funcionando.
+
+### Uvicorn
+
+A aplicação passou a ser executada com:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+O parâmetro `--reload` permite reiniciar automaticamente o servidor durante o desenvolvimento quando alterações são detectadas nos arquivos.
+
+### Swagger
+
+A documentação automática criada pelo FastAPI foi acessada em:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+A interface permitiu visualizar e testar os endpoints diretamente pelo navegador.
+
+### Conexão com PostgreSQL
+
+Foi criada uma função para centralizar a abertura da conexão com o banco.
+
+A função utiliza:
+
+- `PGHOST`;
+- `PGPORT`;
+- `PGDATABASE`;
+- `PGUSER`;
+- `PGPASSWORD`.
+
+Isso evita repetir a configuração da conexão em cada endpoint.
+
+### Endpoint de receitas
+
+Foi criado:
+
+```http
+GET /revenues
+```
+
+O endpoint:
+
+1. abre uma conexão com o PostgreSQL;
+2. cria um cursor;
+3. executa uma consulta SQL;
+4. recupera todas as linhas;
+5. fecha o cursor;
+6. fecha a conexão;
+7. retorna os resultados pela API.
+
+A consulta seleciona:
+
+- `id`;
+- `ano`;
+- `mes`;
+- `codigo_receita`;
+- `nome_receita`;
+- `categoria`;
+- `fonte`;
+- `valor_previsto`;
+- `valor_arrecadado`.
+
+Os registros são ordenados pelo `id`.
+
+### `dict_row`
+
+Foi utilizado:
+
+```python
+from psycopg.rows import dict_row
+```
+
+e configurado `row_factory=dict_row`.
+
+Com isso, cada registro passou a ser retornado com os nomes das colunas, em vez de apenas pela posição dos valores.
+
+### Configuração com `.env`
+
+Durante os testes da API, foi identificado que as variáveis de ambiente configuradas manualmente no PowerShell não permaneciam disponíveis ao abrir uma nova sessão.
+
+Para resolver isso, foi adicionada a dependência:
+
+```text
+python-dotenv
+```
+
+Foi criado um arquivo local:
+
+```text
+.env
+```
+
+contendo as configurações necessárias para conexão com o PostgreSQL.
+
+O arquivo foi adicionado ao `.gitignore` para evitar o versionamento de informações sensíveis.
+
+Também foi criado:
+
+```text
+.env.example
+```
+
+com:
+
+```env
+PGHOST=localhost
+PGPORT=5432
+PGDATABASE=municipal_revenue
+PGUSER=postgres
+PGPASSWORD=
+```
+
+O `.env.example` pode ser versionado porque não contém a senha real.
+
+### Segurança das credenciais
+
+A senha do PostgreSQL continua fora do código-fonte.
+
+O fluxo passou a ser:
+
+```text
+.env
+→ python-dotenv
+→ variáveis de ambiente
+→ os.getenv
+→ psycopg.connect
+```
+
+### Erros encontrados
+
+Ao adicionar `row_factory=dict_row`, inicialmente faltou uma vírgula depois do parâmetro `password`, causando um `SyntaxError`.
+
+Depois da correção da sintaxe, a API retornou `500 Internal Server Error` porque `PGPASSWORD` não estava disponível na sessão atual do terminal.
+
+A criação do `.env` com `python-dotenv` eliminou a necessidade de configurar manualmente as variáveis em cada nova sessão.
+
+### Conceitos praticados
+
+- FastAPI
+- aplicação web
+- endpoint
+- rota HTTP
+- `GET`
+- Uvicorn
+- servidor ASGI
+- Swagger
+- OpenAPI
+- função de conexão com banco
+- Psycopg dentro de uma API
+- cursor
+- `SELECT`
+- `fetchall`
+- `dict_row`
+- `row_factory`
+- JSON
+- código HTTP `200`
+- código HTTP `500`
+- variáveis de ambiente
+- `.env`
+- `.env.example`
+- `.gitignore`
+- `python-dotenv`
+- `load_dotenv`
+- separação entre configuração e código
+
+### Testes realizados
+
+A aplicação foi iniciada com:
+
+```bash
+uv run uvicorn app.main:app --reload
+```
+
+O endpoint `GET /revenues` foi executado e retornou `HTTP 200`.
+
+Os dados foram apresentados como uma lista de objetos JSON contendo os registros existentes no PostgreSQL.
+
+Os 50 registros persistidos anteriormente ficaram disponíveis por meio da API.
+
+Também foi confirmado por `git status` que o arquivo `.env` não estava sendo rastreado pelo Git.
+
+### Resultado
+
+A primeira etapa da API foi concluída.
+
+O projeto agora possui o fluxo:
+
+```text
+CSV bruto
+→ validação
+→ transformação
+→ CSV processado
+→ carga automatizada
+→ PostgreSQL
+→ FastAPI
+→ resposta JSON
+```
+
+A aplicação consegue:
+
+- iniciar um servidor HTTP;
+- expor endpoints;
+- conectar ao PostgreSQL;
+- executar consultas SQL;
+- recuperar registros;
+- converter os resultados para objetos estruturados;
+- retornar os dados em JSON;
+- carregar configurações locais por `.env`;
+- manter credenciais sensíveis fora do repositório.
+
+### Próximo passo
+
+Adicionar parâmetros e filtros ao endpoint `GET /revenues`, permitindo consultas como:
+
+```text
+GET /revenues?ano=2026
+GET /revenues?mes=1
+GET /revenues?categoria=IPTU
+```
+
+Depois disso, iniciar endpoints de indicadores e modelos de resposta com Pydantic.
+
